@@ -6,7 +6,7 @@ groups = ["default", "dev"]
 cross_platform = true
 static_urls = false
 lock_version = "4.3"
-content_hash = "sha256:c04ab86f5945cf120bc7b4cb9c0292a8e0a319a53b80f770517736eb9b87827a"
+content_hash = "sha256:4e1c1d6fbd3fa135ea2a79179032e92d09e44b26c70b2143d9cd3947e8f4bed6"
 
 [[package]]
 name = "asyncpg"
