@@ -47,7 +47,7 @@ if __name__ == "__main__":
 
 ### Considerations
 
-This package uses trio-asyncio, and you'll need to take that into account if you're combining Trio and existing asyncio tooling. If those tools do not use a bridge library like [anyio](https://anyio.readthedocs.io/en/stable/index.html), it's very likely that you'll need to extend them to by wrapping them in `trio_asyncio.aio_as_trio`.
+This package uses trio-asyncio, and you'll need to take that into account if you're combining Trio and existing asyncio tooling. If those tools do not use a bridge library like [anyio](https://anyio.readthedocs.io/en/stable/index.html), it's very likely that you'll need to extend them the coroutines by wrapping them in `trio_asyncio.aio_as_trio` (or using it as a decorator on your own coroutine functions).
 
 This is an [intentional anti-feature of trio-asyncio](https://trio-asyncio.readthedocs.io/en/latest/principles.html).
 
