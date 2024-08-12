@@ -1,6 +1,8 @@
 import datetime
 from typing import List
 
+import pytest
+import trio
 from sqlalchemy import Column, ForeignKey, MetaData, String, Table, func, select
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker
 from sqlalchemy.orm import (
@@ -87,3 +89,19 @@ async def test_orm(setup_engine):
 
         for j, b in enumerate(await a1.awaitable_attrs.bs, start=1):
             assert b.data == f"a1b{j}"
+
+
+@pytest.mark.parametrize("isolated", (True, False), ids=("isolated", "persisted"))
+async def test_concurrency(setup_engine, isolated):
+    engine = await setup_engine(Base.metadata, from_scratch=isolated)
+    async_session = async_sessionmaker(engine, expire_on_commit=False)
+
+    async def _load():
+        async with async_session() as session:
+            stmt = select(B)
+            return (await session.scalars(stmt)).all()
+
+    async with trio.open_nursery() as nursery:
+        nursery.start_soon(_load)
+        nursery.start_soon(_load)
+        nursery.start_soon(_load)

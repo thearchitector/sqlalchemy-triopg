@@ -10,18 +10,21 @@ registry.register("triopg", "sqlalchemy_triopg.triopg", "TrioPGDialect")
 async def setup_engine():
     engine = None
 
-    async def _(meta):
+    async def _(meta, from_scratch=True):
         nonlocal engine
         engine = create_async_engine(
-            "triopg://postgres:password@db/postgres", echo=True
+            "triopg://postgres:password@db/postgres", echo=False
         )
 
-        async with engine.begin() as conn:
-            await conn.run_sync(meta.drop_all)
-            await conn.run_sync(meta.create_all)
+        if from_scratch:
+            async with engine.begin() as conn:
+                await conn.run_sync(meta.drop_all)
+                await conn.run_sync(meta.create_all)
 
         return engine
 
     async with trio_asyncio.open_loop():
-        yield _
-        await engine.dispose()
+        try:
+            yield _
+        finally:
+            await engine.dispose()
