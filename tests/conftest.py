@@ -1,9 +1,13 @@
+import os
+
 import pytest
 import trio_asyncio
 from sqlalchemy.dialects import registry
 from sqlalchemy.ext.asyncio import create_async_engine
 
 registry.register("triopg", "sqlalchemy_triopg.triopg", "TrioPGDialect")
+
+POSTGRES_HOST: str = os.getenv("POSTGRES_HOST", "db")
 
 
 @pytest.fixture
@@ -13,7 +17,7 @@ async def setup_engine():
     async def _(meta, from_scratch=True):
         nonlocal engine
         engine = create_async_engine(
-            "triopg://postgres:password@db/postgres", echo=False
+            f"triopg://postgres:password@{POSTGRES_HOST}/postgres", echo=False
         )
 
         if from_scratch:
